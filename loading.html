@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分析中 - SBTI 人格测试</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style type="text/tailwindcss">
+    @layer theme {
+        :root {
+            --primary-color: #059669;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+        }
+    }
+    
+    @layer components {
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+    }
+    </style>
+</head>
+<body class="bg-white">
+    <div class="min-h-screen flex items-center justify-center px-4">
+        <div class="text-center max-w-md">
+            <div class="w-16 h-16 border-4 border-[var(--primary-color)] border-t-transparent rounded-full spinner mx-auto mb-8"></div>
+            <h2 class="text-2xl font-light mb-4 text-[var(--text-primary)]">正在分析你的答案</h2>
+            <p class="text-[var(--text-secondary)]">这可能需要几秒钟，请耐心等待...</p>
+        </div>
+    </div>
+    <script src="loading-app.js"></script>
+</body>
+</html>

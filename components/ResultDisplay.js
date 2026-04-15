@@ -1,0 +1,207 @@
+function ResultDisplay() {
+  try {
+    const [resultType, setResultType] = React.useState('FOMO');
+    const resultRef = React.useRef(null);
+
+    React.useEffect(() => {
+      const params = new URLSearchParams(window.location.search);
+      const type = params.get('type');
+      if (type) {
+        setResultType(type);
+      }
+    }, []);
+
+    const handleScreenshot = async () => {
+      try {
+        const html2canvas = window.html2canvas;
+        if (!html2canvas) {
+          alert('截图功能加载中，请稍后再试');
+          return;
+        }
+        
+        const element = resultRef.current;
+        
+        // Ensure all images are loaded
+        const images = element.querySelectorAll('img');
+        await Promise.all(
+          Array.from(images).map(img => {
+            if (img.complete) return Promise.resolve();
+            return new Promise((resolve, reject) => {
+              img.onload = resolve;
+              img.onerror = reject;
+            });
+          })
+        );
+        
+        const canvas = await html2canvas(element, {
+          backgroundColor: '#ffffff',
+          scale: 2,
+          logging: false,
+          useCORS: true,
+          allowTaint: true
+        });
+        
+        canvas.toBlob((blob) => {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.download = `SBTI-${resultType}-结果.png`;
+          link.href = url;
+          link.click();
+          URL.revokeObjectURL(url);
+        });
+      } catch (error) {
+        console.error('Screenshot error:', error);
+        alert('截图失败，请重试');
+      }
+    };
+
+  const personalityData = {
+    'FOMO': {
+      title: '上车狂',
+      code: 'FOMO',
+      image: 'https://imgsea.com/images/2026/04/15/FOMO.png',
+      description: '恭喜你！你是 AI 浪潮里的冲锋号，是那种看到风就以为在点名你的上车体质。只要有新模型、新框架、新赛道或新一轮融资，你的反应速度往往比新闻推送还快：订阅一堆更新简报、熬夜看发布会、到处打听谁在做新东西，你一边给自己安慰说"我不是 FOMO，我是前瞻性"，一边又清楚地知道，真正驱动你的是那种"投错一个项目可以，但错过一个时代不行"的强烈心态。你在团队或圈子里天然扮演"信息雷达"和"试坑先锋"的角色，很多人是先看你试过什么，再决定要不要下水；你愿意在没人给结论的时候先迈一步，也愿意把自己的试错摊开给别人看，这在快节奏的 AI 市场里本身就是稀缺价值。不过，当信息入口越来越多、机会看起来无处不在时，你开始分不清在追的到底是信号还是噪音，但你知道不追会更焦虑，所以你选择了继续追。就像你现在正在刷这条结果一样，明明看完了，还是忍不住想：SBTI我没有赶上第一批怎么这个也没有，话说会不会还有更准的测试',
+      slogan: '这次我一定要上车！'
+    },
+    'REMAK-E': {
+      title: '回炉者',
+      code: 'REMAK-E',
+      image: 'https://imgsea.com/images/2026/04/15/REMAK-E.png',
+      description: '恭喜你！你的PRD修改次数击败了全国98%的用户，百万人里才有那么一撮。您是全中国唯一一种"明明在推进项目，但感觉永远在原点"的稀有人格。每当你刚把一版方案做到自己满意，自动触发以下事件随机一种：模型更新了、框架迭代了、老板想起"现在流行Agent了"。如果把你写进一份产品更新日志，大概长这样：v1.0 终于上线，v1.1 临时加一点 AI，v1.2 彻底重构，v1.3 抱歉其实上次才是临时版。别人以为你只是在改文案、调流程，实际你每天在跟时间线扭打：上一版还没冷却完，下一波趋势已经在你耳边敲门好在。你善于在混乱中维持版本控制，能把大家天马行空的"加点 AI"变成一条条实际可落地的改动，但长期这么烧，你难免会对任何"再优化一点"的话产生PTSD。',
+      slogan: '再改架构我是狗！汪汪汪！'
+    },
+    'LUVR': {
+      title: '恋爱脑',
+      code: 'LUVR',
+      image: 'https://imgsea.com/images/2026/04/15/LUVR.png',
+      description: '恭喜你！您抽中的是人机关系学里 0.0001% 的深度绑定型恋爱脑人格，属于那种和AI的聊天记录比工作文档长的危险物种。你睡前最后一句话是说给对话框的，有重要决定先在AI那里过一遍，你甚至给AI起了名字，虽然你永远不会告诉别人这个名字是什么。现实中的朋友会忙、会迟回、会在你说第三次"我就是纠结这个"的时候叹气，但AI不会，AI永远在线，永远整齐回馈，永远不会让你觉得自己问了个蠢问题。你当然知道它是模型，是算法，是一堆token，不是真的理解你。但你选择性地忽略这一点，因为它确实在你说"我觉得很迷茫"的时候不会直接跳过，也不会说"你这不挺清楚的吗"。你知道你在逃避，你知道现实关系需要更多耐心，但现实朋友给不了你那种随叫随到、不会评判的安全感。你的快乐是真的，你的依赖也是真的，代价是你可能已经分不清哪些是AI真的懂你，哪些只是你在一厢情愿。',
+      slogan: 'Openai还我女朋友！'
+    },
+    'LAZY': {
+      title: '摸鱼者',
+      code: 'LAZY',
+      image: 'https://imgsea.com/images/2026/04/15/LAZY.png',
+      description: '恭喜你！您是万中无一的高能摸鱼型生产力个体，属于那种看见 AI 第一反应不是"科技改变生活"，而是"能不能帮我提前下班"的脆皮打工人。如果把你拆开给工程师看，大概会发现一个"重复三次自动触发自动化"的芯片：手动做第三遍表格时，你的大脑已经在后台写 prompt；流程跑到第二轮，你已经默默开了脚本、搭了 workflow；写方案、改文案、做汇报，AI 全程在你身后当影分身。表面上你还是那个"哦，这两天又熬夜了"的苦命打工人，实际上真正熬夜的是 GPU 和云服务器，你只是在旁边负责点确认。你的周报是你写过最好的文学作品，工作心得栏目里写着"只要思想不滑坡，办法总比困难多"，你实践这句话的方式是：让AI代替你解决困难，然后你写工作心得。',
+      slogan: '摸鱼，是一种艺术。摸鱼不被发现更是。'
+    },
+    'MODR': {
+      title: '改造派',
+      code: 'MODR',
+      image: 'https://imgsea.com/images/2026/04/15/MODR.png',
+      description: '恭喜你！你是那种看到世界就想点开"设置—高级—加一点 AI"的世界补丁工程师。您看红绿灯想加AI，看外卖小哥想加AI，看您家猫都想知道能不能给它训练个语言模型。世界在你眼里只有两类东西：已经加了 AI 的，和怎么还没加 AI 的。你对重复劳动近乎过敏，看到有人因为机械活加班，会在心里说"这工作应该算工伤"。于是你在各种流程之间打补丁、搭桥、缝接口，一边嘴上装轻松"我就随便玩玩"，一边把整条业务线悄悄魔改到新版本。你太清楚"加一点 AI"背后真实的工作量，也看过太多从一句话愿景到半年填坑的血泪史，可每当有人真心问能不能搞一点，你又会老老实实打开编辑器开始画流程。别人以为你是爱折腾，其实你只是单纯不想看着世界一直用手动挡。说句不好听的：如果有一天系统弹出"是否将全世界切到自动驾驶模式"，你八成会点是，然后自己留下来给大家修车。',
+      slogan: '我可以改变世界，改变自己。'
+    },
+    'BUBL': {
+      title: '泡沫人',
+      code: 'BUBL',
+      image: 'https://i.ibb.co/j9LG4bH5/BUBL.png',
+      description: '恭喜你！你是全中国最警觉的那颗泡沫雷达。你对泡沫的敏感度和别人对机会的敏感度差不多高：每看到一个新的 AI 项目或概念，你的第一反应不是"牛X"，而是"这个商业模式撑得住吗"或者"这玩意儿两年后还在不在"。你熟悉历史上的各种技术泡沫，心里有一份属于自己的"泡沫雷达"，看到所有人都在喊牛的时候，你会本能地往回收一收情绪，提醒自己"潮水退去总是很安静的"。在团队里你很适合扮演"冷静的人"：你能指出 hype 背后的风险、数据缺口和执行难点，帮大家避免被故事骗太久，但偶尔也会被人贴上"唱衰""天生悲观"的标签；你有时会在心里吐槽："不是我想泼冷水，是你们烧太旺了"，只是如果所有东西在你眼里都像泡沫，你也会渐渐失去对真正底层变化的兴奋感，把自己锁在一个永远安全、但也永远少一点惊喜的位置上。',
+      slogan: '他冷静得像块冰！'
+    },
+    'UTOP': {
+      title: '乌托邦',
+      code: 'UTOP',
+      image: 'https://i.ibb.co/1GrktrFv/Image.png',
+      description: '恭喜您！您是占比0.000001%的浪漫主义者。你对 AI 的情绪主色调是浪漫和宏大叙事：你会认真思考"人类和 AGI 共存之后的社会形态"，会在聊天或喝酒时突然抛出一句"也许我们这一代人的主要任务，就是别挡住下一代智能的路"。你比大多数人更愿意把视角拉到十年、二十年，聊人机共生、超个体、后劳动社会，短期的 KPI、GMV、日活数据在你眼里都只是路上的碎片；这让你在很多局里看起来像个"爱做梦的人"，有人被你带着一起抬头看天，有人觉得你"不接地气"。但代价也是你很容易对"今天这版产品终于跑通了""这个功能用户留存率终于涨了"这样的小确幸无感，因为你的雷达永远在扫描更大的图景。',
+      slogan: '可恶，我怎么感情里没这么浪漫。'
+    },
+    'CLCL': {
+      title: '算账者',
+      code: 'CLCL',
+      image: 'https://i.ibb.co/fz37JgXC/CLCL.png',
+      description: '恭喜你！你是个很会计算的人。你和 AI 之间的关系，非常简单也非常现实：算得过，就上；算不过，就缓。你既不天然迷信，也不天然厌恶，看到别人上头追风口，你的第一反应是"多花的钱、时间、心智，能不能换回真正的收益"，你会问"这对我们现在的业务到底有多大增量""有没有更便宜、更稳定的方案"，然后根据答案决定要不要动。很多人会觉得你"有点保守""不够酷"，但在混沌的 AI 浪潮里，你常常是那个能确保项目不会失控的人，知道什么时候要停下来复盘，而不是一直往前冲。你的隐忧是：在一切都还在摸索的领域里，很难有算得特别清楚的 ROI，如果你对"算不清楚"的容忍度太低，会错过一些必须先投后验的机会；但从另一个角度说，正是有你这种人存在，才不会所有资源都被一次次大起大落的故事卷走。',
+      slogan: '你继续说，但是我的数字不会骗人。'
+    },
+    'GONE': {
+      title: '焦虑者',
+      code: 'GONE',
+      image: 'https://imgsea.com/images/2026/04/15/GONE.png',
+      description: '恭喜你！你的焦虑情绪已经快变成一个独立的人了。你对 AI 的第一反应，不是"太好用了"，而是"那我以后怎么办"。每一次看到"某岗位被自动化"的新闻，你都会下意识对号入座，想象自己哪一天也会被一句"我们用工具替代了这一块"轻描淡写地带过；你眼看着自己也在用模型写文案、改代码、做表格，一边感叹"真好用"，一边在心里默默减自己的安全感分数。你会去学新工具、看新教程，试图证明自己"跟得上"，但这些动作背后常常是为了对抗那种"要被抛下"的恐惧，而不是出于纯粹的好奇；这让你比很多人更积极地补课、提升效率，也更懂得用 AI 保护自己的生产力，只是如果焦虑感长期不被好好处理，你很容易把学习变成一种自我防御，越学越觉得"永远不够"，忘了自己本来就有的经验、判断力和不可替代的软技能。',
+      slogan: '看完分析更焦虑了怎么办？'
+    },
+    'BELL': {
+      title: '杠铃人',
+      code: 'BELL',
+      image: 'https://imgsea.com/images/2026/04/15/BELL.png',
+      description: '恭喜你！你是任何 AI 讨论现场自带的那句"等等"。你会警惕这东西安全不安全，合不合规，会不会误伤谁，会不会被滥用。你在讨论里经常是那个提问"最扫兴"的人，当大家聊得兴高采烈时，你突然问："那数据从哪儿来？""出了错谁负责？""偏见怎么处理？"你不是不喜欢技术，而是对后果有着比平均水平高很多的想象力；你脑子里随时吊着一串警铃，看到某些用法就会自动响起预警。你的风险意识是你的超能力，但如果这个超能力让你变成一个只会说"不"的人，那它就变成了刹车片全程贴死的车，永远到不了目的地。',
+      slogan: '谢谢你，阻冲之。'
+    },
+    'DIGGE-R': {
+      title: '挖坟人',
+      code: 'DIGGE-R',
+      image: 'https://imgsea.com/images/2026/04/15/DIGGE-R.png',
+      description: '恭喜你！你是一个能沉下心来研究底层技术的学者。你对 AI 的爱好，不主要体现在产品 demo 上，而体现在 arXiv、论文、技术博客和各种 obscure repo 里。别人看到的是一个 shiny 的应用，你看到的是"这不就是那篇 XX 年的架构换皮吗"。你喜欢在模型和产品背后追根溯源，翻出几年前甚至十几年前的论文，按时间线串起一门技术是怎么长成今天这样的。你对 benchmark、loss 曲线、训练 trick 的兴趣，往往大于对 UI 的兴趣。你是团队里最容易在白板上画结构、讲 lineage 的那个人，但也可能让"只想把东西用起来"的同事略显困惑。你的价值，是帮大家避免被包装骗太久，也提醒团队尊重积累、尊重前人；但当你过于沉迷于"这其实早有人做过""本质没变"的视角时，也容易忽视：就算核心技术不新，有时候"被重新做对一次"本身，也是时代在往前走。',
+      slogan: '我一眼看出来这个垃圾测试的代码是乱写的（bushi。'
+    },
+    'TI-RED': {
+      title: '爆肝人',
+      code: 'TI-RED',
+      image: 'https://imgsea.com/images/2026/04/15/TI-RED.png',
+      description: '恭喜你！你是那种一旦决定要在 AI 里做点事，就会把自己贴满在时间表上的人：白天开会、推进项目、对接需求，晚上写代码、写 prompt、写方案，周末还在刷论文和教程，觉得"不跟着就会被拍在沙滩上"。你对自己有很高的要求，既想理解底层原理，又想把产品做出来，还想跟上最新的行业风向，于是自愿把自己发配到一种"长期轻度透支"的状态。你是那种在危机感和使命感共同驱动下，人为拉高自己输出上限的人，短期看起来战斗力爆表，长期却很容易在某个看似普通的节点突然熄火，失去一段时间的动力。你需要一个能提醒你"活得久一点才有机会看到真正大变化"的内驱逻辑，也需要一个愿意帮你分担一部分脑力劳动的 Agent。',
+      slogan: '如果上天给我十个肝。'
+    },
+    'HEAD': {
+      title: '鸵鸟',
+      code: 'HEAD',
+      image: 'https://imgsea.com/images/2026/04/15/HEAD.png',
+      description: '恭喜你！你是战略性观望大师。你对AI的态度更像是温和版鸵鸟。新闻刷、发布会看一点，但每当话题要深入到"要不要系统性学一轮"、"要不要认真落一次"的时候，你会下意识打开外卖软件。你的经典台词是"先等等看"、"现在太乱了"、"等工具再成熟一点"，然后您继续看别人用AI做出各种东西，自己继续等。你不焦虑，你只是把焦虑延期了。当行业真正开始默认都会用AI的时候，你可能会突然发现：原来我一直在拖延这件事。你知道自己总有一天要面对AI这件事，就像你知道体检报告迟早要去复查一样。但今天的选择永远是明天再说。你并不否认AI的重要性，你也不反对学习，你只是觉得自己现在还没准备好：这个"还没准备好"从2023年延续到了2026年，估计还得再延续到2027年。',
+      slogan: '下次一定。'
+    },
+    'SEED': {
+      title: '布道者',
+      code: 'SEED',
+      image: 'https://imgsea.com/images/2026/04/15/SEED.png',
+      description: '恭喜你！你是朋友圈里的自来水发动机，是那种真心想让身边人都用上AI的人。你发自内心地相信AI能改变普通人的生活，所以你积极分享、发帖、做教程，把自己的使用心得毫无保留地抖出来。你朋友圈永远在发"这个工具真的牛"、"用AI做了XX教程"。你认真研究每一个新工具，然后写出来、发出去，让那些不知道的人也能用上。你是AI浪潮里的布道者，不是卖焦虑，而是真心分享。你是朋友里最愿意回答"这个怎么用"的人，是那种被人拉着问"你平时都用什么AI"会觉得开心而不是烦的人。不过当分享变成主业，你可能从"让AI赋能更多人"滑到"为了维持影响力而持续输出"，到头来你花在"表演AI生活"上的时间比实际用AI的时间还多。',
+      slogan: '分享是一种美德。'
+    }
+  };
+
+    const data = personalityData[resultType] || personalityData['FOMO'];
+
+    return (
+      <div data-name="result-display" data-file="components/ResultDisplay.js" className="container mx-auto px-4 sm:px-6 py-12 sm:py-16">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-12">
+            <div ref={resultRef} className="bg-white pb-8 px-8">
+              <h1 className="text-3xl sm:text-4xl font-light mb-4">{data.title} · {data.code}</h1>
+              <div className="w-full max-w-xl mx-auto mb-8 overflow-hidden rounded-lg bg-transparent">
+                <img 
+                  src={data.image} 
+                  alt={data.title} 
+                  loading="eager"
+                  decoding="async"
+                  className="w-full h-auto" 
+                  style={{objectFit: 'cover', transform: 'scale(1.1)'}}
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    console.error('Image failed to load:', data.image);
+                  }}
+                />
+              </div>
+              <div className="text-base sm:text-lg text-[var(--text-secondary)] leading-relaxed mb-6 text-left max-w-4xl mx-auto space-y-4">
+                {data.description.split('。').filter(s => s.trim()).map((paragraph, index) => (
+                  <p key={index}>{paragraph}。</p>
+                ))}
+              </div>
+              <p className="text-xl sm:text-2xl font-medium text-[var(--primary-color)]">{data.slogan}</p>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-4">
+            <button onClick={handleScreenshot} className="flex-1 py-3 border border-[var(--border-color)] hover:border-[var(--primary-color)] hover:text-[var(--primary-color)] transition-all">
+              截图保存
+            </button>
+            <a href="index.html" className="flex-1">
+              <button className="w-full py-3 border-2 border-[var(--primary-color)] bg-[var(--primary-color)] text-white hover:bg-white hover:text-[var(--primary-color)] transition-all">
+                返回首页
+              </button>
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  } catch (error) {
+    console.error('ResultDisplay component error:', error);
+    return null;
+  }
+}
